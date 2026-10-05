@@ -1,0 +1,17 @@
+.git
+.agent
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+build
+dist
+*.egg-info
+.env
+storage/images
+model
+face_database
+downloads
+scratch

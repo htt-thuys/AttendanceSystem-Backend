@@ -1,0 +1,2 @@
+# db/migrations/versions — Thư mục chứa các file migration
+# File này chỉ để đánh dấu folder, sẽ được tự sinh bởi: alembic revision --autogenerate

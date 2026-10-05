@@ -1,0 +1,41 @@
+"""Compatibility facade for the refactored meetings service package."""
+
+from modules.meetings.services import (
+    add_participants,
+    apply_unknown_assignment_to_meetings,
+    auto_checkin_by_camera,
+    auto_checkin_selected_meeting,
+    cancel_meeting,
+    checkin_participant,
+    checkout_participant,
+    complete_meeting,
+    create_meeting,
+    ensure_recognition_meeting_context,
+    get_meeting_attendance,
+    get_meeting_detail,
+    list_meetings,
+    list_active_public_meetings,
+    remove_participant,
+    request_absence,
+    update_meeting,
+)
+
+__all__ = [
+    "add_participants",
+    "apply_unknown_assignment_to_meetings",
+    "auto_checkin_by_camera",
+    "auto_checkin_selected_meeting",
+    "cancel_meeting",
+    "checkin_participant",
+    "checkout_participant",
+    "complete_meeting",
+    "create_meeting",
+    "ensure_recognition_meeting_context",
+    "get_meeting_attendance",
+    "get_meeting_detail",
+    "list_meetings",
+    "list_active_public_meetings",
+    "remove_participant",
+    "request_absence",
+    "update_meeting",
+]

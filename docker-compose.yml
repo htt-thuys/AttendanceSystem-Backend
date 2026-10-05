@@ -1,0 +1,85 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: attendance-api
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:1@postgres:5432/face_recognition
+      QDRANT_URL: http://qdrant:6333
+      IMAGE_STORAGE_PATH: /app/storage/images
+      BACKEND_CORS_ORIGINS: ${BACKEND_CORS_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173,http://localhost:8000}
+      BACKEND_CORS_ORIGIN_REGEX: ${BACKEND_CORS_ORIGIN_REGEX:-https://.*\.ngrok-free\.app|https://.*\.ngrok\.app}
+    ports:
+      - "8000:8000"
+    volumes:
+      - app_images:/app/storage/images
+      - insightface_cache:/home/appuser/.insightface
+    depends_on:
+      postgres:
+        condition: service_healthy
+      qdrant:
+        condition: service_started
+    restart: unless-stopped
+
+  seed:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: attendance-seed
+    profiles:
+      - seed
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:1@postgres:5432/face_recognition
+      QDRANT_URL: http://qdrant:6333
+      IMAGE_STORAGE_PATH: /app/storage/images
+      BACKEND_CORS_ORIGINS: ${BACKEND_CORS_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173,http://localhost:8000}
+      BACKEND_CORS_ORIGIN_REGEX: ${BACKEND_CORS_ORIGIN_REGEX:-https://.*\.ngrok-free\.app|https://.*\.ngrok\.app}
+    volumes:
+      - app_images:/app/storage/images
+      - insightface_cache:/home/appuser/.insightface
+    depends_on:
+      postgres:
+        condition: service_healthy
+      qdrant:
+        condition: service_started
+    command: python scripts/seed_test_data.py
+    restart: "no"
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: attendance-postgres
+    environment:
+      POSTGRES_DB: face_recognition
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "1"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d face_recognition"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: attendance-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  qdrant_data:
+  app_images:
+  insightface_cache:
